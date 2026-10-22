@@ -36,16 +36,46 @@ Our team is implementing two distinct real-world scenarios:
 
 ---
 
-## 🚀 Getting Started & Setup
+## 👥 Team Responsibilities & File Assignments
 
-### Prerequisites
+To avoid merge conflicts, each team member is responsible for creating and maintaining specific Java files and packages.
 
-* Java Development Kit (JDK 17+) installed on your machine.
-* Maven or Gradle installed for build management.
+### 1. Nate (Group Leader)
+* **Role:** System Architecture, UI Integration, Explanation Module, & Project Lead.
+* **Key Tasks:** 
+  * Design the overall application flow and integrate Ahmed’s and Devin’s modules into the primary interface.
+  * Implement the explanation engine to display step-by-step pass/fail logic to the user.
+  * Lead technical report assembly, architecture diagramming, and presentation coordination.
+* **Assigned Files:**
+  * `src/main/java/com/logicforge/Main.java` — Main application launcher.
+  * `src/main/java/com/logicforge/ui/MainViewController.java` — Primary Java GUI layout and tab controller.
+  * `src/main/java/com/logicforge/ui/ExplanationView.java` — GUI component for explainable decision outputs.
 
-### Installation & Execution
+---
 
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/your-username/logicforge.git](https://github.com/your-username/logicforge.git)
-   cd logicforge
+### 2. Ahmed
+* **Role:** Scenario C Lead (LaptopWise) & Knowledge Graph Engine.
+* **Key Tasks:** 
+  * Build the laptop catalog data structure and implement manual constraint inputs.
+  * Implement filtering and multi-criteria ranking based on user priorities.
+  * Construct the LaptopWise decision tree, knowledge graph, and adjacency list representations.
+* **Assigned Files:**
+  * `src/main/java/com/logicforge/scenarios/LaptopWise.java` — Scenario C logic engine and constraint filter.
+  * `src/main/java/com/logicforge/scenarios/LaptopCatalog.java` — Sample laptop data store and custom specification input handler.
+  * `src/main/java/com/logicforge/graph/KnowledgeGraph.java` — Knowledge graph data structure and adjacency list/matrix generator.
+  * `src/test/java/com/logicforge/scenarios/LaptopWiseTest.java` — Unit tests for Scenario C filtering and ranking.
+
+---
+
+### 3. Devin
+* **Role:** Scenario D Lead (SecureSteps) & Core Logic Engines.
+* **Key Tasks:** 
+  * Implement SecureSteps login logic ($AccessGranted = P \land V \land L$) and safe recovery workflow decision tree.
+  * Build the general-purpose Truth Table generator and Expression Tree traversal engine (Preorder, Inorder, Postorder).
+  * Write logic validation and boundary condition tests.
+* **Assigned Files:**
+  * `src/main/java/com/logicforge/scenarios/SecureSteps.java` — Scenario D login simulation logic and recovery outcomes.
+  * `src/main/java/com/logicforge/logic/TruthTableGenerator.java` — Proposition evaluator and dynamic truth table builder.
+  * `src/main/java/com/logicforge/trees/ExpressionTree.java` — Binary expression tree builder and tree traversal algorithms.
+  * `src/main/java/com/logicforge/trees/DecisionTree.java` — Sequential decision path evaluator.
+  * `src/test/java/com/logicforge/logic/LogicEngineTest.java` — Unit tests for truth tables, travers
