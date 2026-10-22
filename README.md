@@ -42,14 +42,14 @@ To avoid merge conflicts, each team member is responsible for creating and maint
 
 ### 1. Nate (Group Leader)
 * **Role:** System Architecture, UI Integration, Explanation Module, & Project Lead.
-* **Assigned Files (File Names Only):**
+* **Assigned Files:**
   * `Main.java`
   * `MainViewController.java`
   * `ExplanationView.java`
 
 ### 2. Ahmed
 * **Role:** Scenario C Lead (LaptopWise) & Knowledge Graph Engine.
-* **Assigned Files (File Names Only):**
+* **Assigned Files:**
   * `LaptopWise.java`
   * `LaptopCatalog.java`
   * `KnowledgeGraph.java`
@@ -57,7 +57,7 @@ To avoid merge conflicts, each team member is responsible for creating and maint
 
 ### 3. Devin
 * **Role:** Scenario D Lead (SecureSteps) & Core Logic Engines.
-* **Assigned Files (File Names Only):**
+* **Assigned Files:**
   * `SecureSteps.java`
   * `TruthTableGenerator.java`
   * `ExpressionTree.java`
