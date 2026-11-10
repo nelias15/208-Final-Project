@@ -1,4 +1,3 @@
-# 208-Final-Project
 # LogicForge — Rule-Based Decision Support System
 
 An interactive, rule-based application built in **Java** that models propositional logic, truth tables, expression trees, sequential decision trees, and knowledge graphs to deliver transparent, explainable recommendations.
@@ -10,7 +9,7 @@ An interactive, rule-based application built in **Java** that models proposition
 LogicForge is a decision-support prototype built to make logic transparent and verifiable. Instead of acting as a "black-box" system, LogicForge explicitly demonstrates *why* a recommendation was made by showing exact rule evaluations, generated truth tables, expression trees, and relational knowledge graphs. 
 
 Our team is implementing two distinct real-world scenarios:
-1. **Scenario C — LaptopWise (Budget-Aware Laptop Selector):** Helps users filter and rank laptops based on budget ($B$), minimum RAM ($M$), weight limit ($L$), and optional warranty requirements ($W$) using the rule $Eligible = B \land M \land L (\land W)$.
+1. **Scenario B — Course Registration & Eligibility Engine:** Evaluates student eligibility based on course prerequisites, seat availability, registration holds, and deadlines.
 2. **Scenario D — SecureSteps (Secure Login Logic Simulator):** A safe educational simulator modeling multi-factor access control using fictional inputs ($P$ = password, $V$ = 2FA verification, $L$ = account unlocked) via the rule $AccessGranted = P \land V \land L$.
 
 ---
@@ -22,7 +21,7 @@ Our team is implementing two distinct real-world scenarios:
 * **Truth Table Generator:** Automatically generates truth values showing all input combinations and outcomes.
 * **Expression Tree & Traversals:** Visualizes logical expression trees and computes Preorder, Inorder, and Postorder traversals.
 * **Decision Trees:** Step-by-step sequential decision paths with clear outcome explanations and safe recovery actions.
-* **Knowledge Graphs & Adjacency Lists:** Maps entity relationships (e.g., Laptops $\rightarrow$ Specs, Accounts $\rightarrow$ Verification Steps) and outputs adjacency lists.
+* **Knowledge Graphs & Adjacency Lists:** Maps entity relationships (e.g., Students $\rightarrow$ Courses, Accounts $\rightarrow$ Verification Steps) and outputs adjacency lists.
 * **Explainable Recommendations:** Highlights exact pass/fail conditions and identifies missing or assumed data.
 
 ---
@@ -48,21 +47,26 @@ To avoid merge conflicts, each team member is responsible for creating and maint
   * `ExplanationView.java`
 
 ### 2. Ahmed
-* **Role:** Scenario C Lead (LaptopWise) & Knowledge Graph Engine.
+* **Role:** Scenario B Lead (Course Registration & Eligibility Engine).
 * **Assigned Files:**
-  * `LaptopWise.java`
-  * `LaptopCatalog.java`
-  * `KnowledgeGraph.java`
-  * `LaptopWiseTest.java`
+  * `CourseRegistration.java`
+  * `CourseCatalog.java`
+  * `CourseRegistrationTest.java`
 
 ### 3. Devin
-* **Role:** Scenario D Lead (SecureSteps) & Core Logic Engines.
+* **Role:** Core Logic Engines Lead (Truth Tables & Expression Trees).
 * **Assigned Files:**
-  * `SecureSteps.java`
   * `TruthTableGenerator.java`
   * `ExpressionTree.java`
-  * `DecisionTree.java`
   * `LogicEngineTest.java`
+
+### 4. Bruce
+* **Role:** Scenario D Lead (SecureSteps) & Knowledge Graph Engine.
+* **Assigned Files:**
+  * `SecureSteps.java`
+  * `DecisionTree.java`
+  * `KnowledgeGraph.java`
+  * `SecureStepsTest.java`
 
 ---
 
