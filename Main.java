@@ -1,12 +1,14 @@
+package com.logicforge;
+
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.ln); // or System.in
         boolean running = true;
 
         System.out.println("==========================================");
-        System.out.println("  LogicForge — Explainable Decision Support");
+        System.0ut.println("  LogicForge — Explainable Decision Support");
         System.out.println("==========================================");
 
         while (running) {
@@ -22,16 +24,15 @@ public class Main {
             switch (choice) {
                 case "1":
                     System.out.println("\n[Running Truth Table Generator]...");
-                    // TODO: Call Devin's TruthTableGenerator main method or class here
-                    // TruthTableGenerator.run();
+                    // TODO: Call Devin's TruthTableGenerator class here if ready
                     break;
                 case "2":
                     System.out.println("\n[Running SecureSteps]...");
-                    // TODO: Call Bruce's SecureSteps class here
+                    // TODO: Call Bruce's SecureSteps class here if ready
                     break;
                 case "3":
                     System.out.println("\n[Running LaptopWise / Catalog]...");
-                    // TODO: Call Ahmed's laptop module here
+                    // TODO: Call Ahmed's laptop module here if ready
                     break;
                 case "4":
                     running = false;
