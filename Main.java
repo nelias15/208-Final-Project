@@ -1,9 +1,46 @@
+import java.util.Scanner;
+
 public class Main {
     public static void main(String[] args) {
-        // Call your project's main logic or backend controller here
-        System.out.println("Starting LogicForge — Explainable Decision Support...");
-        
-        // Example: If your main logic starts from another class or controller:
-        // MainViewController.runApp();
+        Scanner scanner = new Scanner(System.in);
+        boolean running = true;
+
+        System.out.println("==========================================");
+        System.out.println("  LogicForge — Explainable Decision Support");
+        System.out.println("==========================================");
+
+        while (running) {
+            System.out.println("\nSelect a module to run:");
+            System.out.println("1. Truth Table Generator (Devin's Module)");
+            System.out.println("2. SecureSteps (Bruce's Module)");
+            System.out.println("3. LaptopWise & Catalog (Ahmed's Module)");
+            System.out.println("4. Exit");
+            System.out.print("Enter your choice (1-4): ");
+
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    System.out.println("\n[Running Truth Table Generator]...");
+                    // TODO: Call Devin's TruthTableGenerator main method or class here
+                    // TruthTableGenerator.run();
+                    break;
+                case "2":
+                    System.out.println("\n[Running SecureSteps]...");
+                    // TODO: Call Bruce's SecureSteps class here
+                    break;
+                case "3":
+                    System.out.println("\n[Running LaptopWise / Catalog]...");
+                    // TODO: Call Ahmed's laptop module here
+                    break;
+                case "4":
+                    running = false;
+                    System.out.println("Exiting LogicForge. Good luck with your presentation!");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please enter a number from 1 to 4.");
+            }
+        }
+        scanner.close();
     }
 }
