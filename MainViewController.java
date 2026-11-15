@@ -1,11 +1,8 @@
-package com.logicforge;
-
 import java.time.LocalDate;
 import java.util.Scanner;
 
 public class MainViewController {
 
-    // Backend instances for team modules (kept exactly as your team built them)
     private final SecureSteps secureStepsSimulator = new SecureSteps();
     private final LaptopWise laptopWiseSimulator = new LaptopWise();
     private final LaptopCatalog laptopCatalog = LaptopCatalog.createSampleCatalog();
@@ -41,7 +38,7 @@ public class MainViewController {
         scanner.close();
     }
 
-    private void runSecureStepsScenario(Scanner scanner) {
+    public void runSecureStepsScenario(Scanner scanner) {
         System.out.println("\n--- Running Scenario D: SecureSteps ---");
         System.out.print("Is Password correct? (true/false): ");
         boolean p = Boolean.parseBoolean(scanner.nextLine());
@@ -54,11 +51,10 @@ public class MainViewController {
 
         SecureSteps.EvaluationResult result = secureStepsSimulator.evaluate(p, v, l);
 
-        // Run Devin's Truth Table generator logic
         StringBuilder truthTableSb = new StringBuilder();
         truthTableSb.append("\n--- Devin's Truth Table Engine ---\n");
         truthTableSb.append("P\tQ\tAND\tOR\tNOT P\n");
-        
+
         boolean[] values = {true, false};
         for (boolean bp : values) {
             for (boolean bq : values) {
@@ -66,7 +62,7 @@ public class MainViewController {
                 boolean or = bp || bq;
                 boolean not = !bp;
                 truthTableSb.append(bp).append("\t").append(bq).append("\t")
-                            .append(and).append("\t").append(or).append("\t").append(not).append("\n");
+                        .append(and).append("\t").append(or).append("\t").append(not).append("\n");
             }
         }
 
@@ -75,7 +71,7 @@ public class MainViewController {
         System.out.println(truthTableSb.toString());
     }
 
-    private void runLaptopWiseScenario(Scanner scanner) {
+    public void runLaptopWiseScenario(Scanner scanner) {
         System.out.println("\n--- Running Scenario B: LaptopWise ---");
         System.out.println("Available Courses:");
         for (LaptopCatalog.Course course : laptopCatalog.getAllCourses()) {
@@ -93,17 +89,17 @@ public class MainViewController {
 
         try {
             LaptopWise.RegistrationResult regResult = laptopWiseSimulator.evaluate(
-                selectedCourseCode,
-                laptopCatalog,
-                prereq,
-                hold,
-                LocalDate.now().plusDays(10),
-                LocalDate.now()
+                    selectedCourseCode,
+                    laptopCatalog,
+                    prereq,
+                    hold,
+                    LocalDate.now().plusDays(10),
+                    LocalDate.now()
             );
 
             System.out.println("\n=== Scenario B Results ===");
             System.out.println("Selected Course: " + selectedCourseCode);
-            
+
             LaptopCatalog.Course courseObj = laptopCatalog.findCourse(selectedCourseCode);
             if (courseObj != null) {
                 System.out.println("Title: " + courseObj.getTitle());
