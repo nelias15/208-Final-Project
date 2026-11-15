@@ -1,151 +1,145 @@
 
-import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * CoursePath registration eligibility checker.
- *
- * Eligible = P && S && !H && D
- *
- * P = prerequisite completed
- * S = seat available
- * H = registration hold exists
- * D = deadline has not passed
+ * Stores courses and checks available seats.
  */
-public class LaptopWise {
+public class LaptopCatalog {
 
-    public enum Status {
-        READY_TO_REGISTER,
-        RESOLVE_HOLD,
-        CHOOSE_ANOTHER_SECTION,
-        CHECK_PREREQUISITE,
-        REGISTRATION_CLOSED
-    }
+    public static class Course {
+        private final String courseCode;
+        private final String title;
+        private final String prerequisiteCode;
+        private final int capacity;
+        private final int enrolled;
 
-    public static class RegistrationResult {
-        private final boolean eligible;
-        private final Status status;
-        private final List<String> explanations;
+        public Course(String courseCode, String title,
+                      String prerequisiteCode,
+                      int capacity, int enrolled) {
 
-        public RegistrationResult(boolean eligible, Status status,
-                                  List<String> explanations) {
-            this.eligible = eligible;
-            this.status = status;
-            this.explanations = Collections.unmodifiableList(
-                    new ArrayList<>(explanations));
-        }
-
-        public boolean isEligible() {
-            return eligible;
-        }
-
-        public Status getStatus() {
-            return status;
-        }
-
-        public String getStatusMessage() {
-            switch (status) {
-                case READY_TO_REGISTER:
-                    return "Ready to Register";
-                case RESOLVE_HOLD:
-                    return "Resolve a Hold";
-                case CHOOSE_ANOTHER_SECTION:
-                    return "Choose Another Section";
-                case CHECK_PREREQUISITE:
-                    return "Check Prerequisite";
-                case REGISTRATION_CLOSED:
-                    return "Registration Closed";
-                default:
-                    return "Unknown";
+            if (courseCode == null || courseCode.isBlank()) {
+                throw new IllegalArgumentException(
+                        "Course code is required.");
             }
+
+            if (title == null || title.isBlank()) {
+                throw new IllegalArgumentException(
+                        "Course title is required.");
+            }
+
+            if (capacity < 0 || enrolled < 0 || enrolled > capacity) {
+                throw new IllegalArgumentException(
+                        "Invalid enrollment or capacity.");
+            }
+
+            this.courseCode = courseCode;
+            this.title = title;
+            this.prerequisiteCode = prerequisiteCode;
+            this.capacity = capacity;
+            this.enrolled = enrolled;
         }
 
-        public List<String> getExplanations() {
-            return explanations;
+        public String getCourseCode() {
+            return courseCode;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public String getPrerequisiteCode() {
+            return prerequisiteCode;
+        }
+
+        public int getCapacity() {
+            return capacity;
+        }
+
+        public int getEnrolled() {
+            return enrolled;
+        }
+
+        public int getAvailableSeats() {
+            return capacity - enrolled;
+        }
+
+        public boolean isSeatAvailable() {
+            return getAvailableSeats() > 0;
+        }
+
+        @Override
+        public String toString() {
+            return courseCode + " - " + title
+                    + " | Prerequisite: "
+                    + (prerequisiteCode == null
+                    || prerequisiteCode.isBlank()
+                    ? "None" : prerequisiteCode)
+                    + " | Available seats: " + getAvailableSeats();
         }
     }
 
-    public RegistrationResult evaluate(
-            LaptopCatalog.Course course,
-            boolean prerequisiteCompleted,
-            boolean registrationHold,
-            LocalDate registrationDeadline,
-            LocalDate today) {
+    private final Map<String, Course> courses =
+            new LinkedHashMap<>();
 
-        if (course == null) {
-            throw new IllegalArgumentException("Course cannot be null.");
-        }
-
-        if (registrationDeadline == null || today == null) {
-            throw new IllegalArgumentException("Dates cannot be null.");
-        }
-
-        boolean seatAvailable = course.isSeatAvailable();
-        boolean deadlineOpen = !today.isAfter(registrationDeadline);
-
-        boolean eligible = prerequisiteCompleted
-                && seatAvailable
-                && !registrationHold
-                && deadlineOpen;
-
-        List<String> explanations = new ArrayList<>();
-
-        explanations.add(prerequisiteCompleted
-                ? "Prerequisite requirement is satisfied."
-                : "Prerequisite has not been completed.");
-
-        explanations.add(seatAvailable
-                ? "A seat is available."
-                : "No seats are currently available.");
-
-        explanations.add(registrationHold
-                ? "A registration hold exists."
-                : "No registration hold exists.");
-
-        explanations.add(deadlineOpen
-                ? "The registration deadline has not passed."
-                : "The registration deadline has passed.");
-
-        Status status;
-
-        if (eligible) {
-            status = Status.READY_TO_REGISTER;
-        } else if (!prerequisiteCompleted) {
-            status = Status.CHECK_PREREQUISITE;
-        } else if (registrationHold) {
-            status = Status.RESOLVE_HOLD;
-        } else if (!seatAvailable) {
-            status = Status.CHOOSE_ANOTHER_SECTION;
-        } else {
-            status = Status.REGISTRATION_CLOSED;
-        }
-
-        return new RegistrationResult(eligible, status, explanations);
-    }
-
-    public RegistrationResult evaluate(
-            String courseCode,
-            LaptopCatalog catalog,
-            boolean prerequisiteCompleted,
-            boolean registrationHold,
-            LocalDate registrationDeadline,
-            LocalDate today) {
-
-        if (catalog == null) {
-            throw new IllegalArgumentException("Catalog cannot be null.");
-        }
-
-        LaptopCatalog.Course course = catalog.findCourse(courseCode);
-
+    public void addCourse(Course course) {
         if (course == null) {
             throw new IllegalArgumentException(
-                    "Course not found: " + courseCode);
+                    "Course cannot be null.");
         }
 
-        return evaluate(course, prerequisiteCompleted,
-                registrationHold, registrationDeadline, today);
+        String key = course.getCourseCode().toUpperCase();
+
+        if (courses.containsKey(key)) {
+            throw new IllegalArgumentException(
+                    "Course already exists: " + key);
+        }
+
+        courses.put(key, course);
+    }
+
+    public Course findCourse(String courseCode) {
+        if (courseCode == null) {
+            return null;
+        }
+
+        return courses.get(courseCode.toUpperCase());
+    }
+
+    public Collection<Course> getAllCourses() {
+        return Collections.unmodifiableCollection(courses.values());
+    }
+
+    public int size() {
+        return courses.size();
+    }
+
+    public static LaptopCatalog createSampleCatalog() {
+        LaptopCatalog catalog = new LaptopCatalog();
+
+        catalog.addCourse(new Course(
+                "COSC 208",
+                "Discrete Structures",
+                "COSC 202",
+                30,
+                18));
+
+        catalog.addCourse(new Course(
+                "COSC 301",
+                "Data Structures",
+                "COSC 208",
+                25,
+                25));
+
+        catalog.addCourse(new Course(
+                "MATH 231",
+                "Calculus II",
+                "MATH 230",
+                20,
+                12));
+
+        return catalog;
     }
 }
-
