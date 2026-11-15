@@ -1,43 +1,34 @@
-package com.logicforge;
-
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 
 public class MainViewController {
 
-    @FXML
-    private ComboBox<String> scenarioSelector;
+    @FXML private CheckBox passwordCheckBox;     // P
+    @FXML private CheckBox verificationCheckBox; // V
+    @FXML private CheckBox unlockedCheckBox;     // L
+    @FXML private Button evaluateButton;
+    @FXML private TextArea resultTextArea;
 
-    // Checkboxes for Inputs (Scenario B & D examples)
-    @FXML private CheckBox inputP; // Prerequisite / Password Passed
-    @FXML private CheckBox inputS; // Seat Available / 2FA Passed
-    @FXML private CheckBox inputH; // Hold Exists (Scenario B)
-    @FXML private CheckBox inputL; // Account Unlocked (Scenario D)
-    @FXML private CheckBox inputD; // Deadline Open (Scenario B)
-
-    @FXML
-    private TextArea resultOutputArea;
+    // Instance of Bruce's SecureSteps backend simulator
+    private final SecureSteps secureStepsSimulator = new SecureSteps();
 
     @FXML
     public void initialize() {
-        scenarioSelector.getItems().addAll("Scenario B: Course Registration", "Scenario D: SecureSteps Login");
-        scenarioSelector.setValue("Scenario B: Course Registration");
+        evaluateButton.setOnAction(event -> handleEvaluateSecureSteps());
     }
 
-    @FXML
-    protected void onEvaluateButtonClick() {
-        String selectedScenario = scenarioSelector.getValue();
-        
-        if (selectedScenario.contains("Course Registration")) {
-            // TODO: Call Ahmed's CourseRegistration class once pulled from GitHub
-            // boolean result = CourseRegistration.evaluate(inputP.isSelected(), inputS.isSelected(), inputH.isSelected(), inputD.isSelected());
-            resultOutputArea.setText("Evaluating Scenario B...");
-        } else {
-            // TODO: Call Bruce's SecureSteps class once pulled from GitHub
-            // boolean result = SecureSteps.evaluate(inputP.isSelected(), inputS.isSelected(), inputL.isSelected());
-            resultOutputArea.setText("Evaluating Scenario D...");
-        }
+    private void handleEvaluateSecureSteps() {
+        // 1. Read input states from your UI checkboxes
+        boolean p = passwordCheckBox.isSelected();
+        boolean v = verificationCheckBox.isSelected();
+        boolean l = unlockedCheckBox.isSelected();
+
+        // 2. Call Bruce's backend evaluation method
+        SecureSteps.EvaluationResult result = secureStepsSimulator.evaluate(p, v, l);
+
+        // 3. Display the structured result in your UI / ExplanationView
+        resultTextArea.setText(result.toString());
     }
 }
