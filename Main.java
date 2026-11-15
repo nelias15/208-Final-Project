@@ -12,7 +12,7 @@ public class Main extends Application {
         // Loads your main UI layout 
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("MainView.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
-        
+
         primaryStage.setTitle("LogicForge — Explainable Decision Support");
         primaryStage.setScene(scene);
         primaryStage.show();
