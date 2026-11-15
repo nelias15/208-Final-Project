@@ -8,6 +8,7 @@ import java.time.LocalDate;
 public class MainViewController {
 
     @FXML private ComboBox<String> scenarioSelector;
+    @FXML private ComboBox<String> courseComboBox; // ComboBox for Ahmed's courses
     
     // UI elements for Scenario D (SecureSteps)
     @FXML private CheckBox passwordCheckBox;     // P
@@ -15,8 +16,8 @@ public class MainViewController {
     @FXML private CheckBox unlockedCheckBox;     // L
     
     // UI elements for Scenario B (LaptopWise / Course Eligibility)
-    @FXML private CheckBox prereqCheckBox;       // Prerequisite completed
-    @FXML private CheckBox holdCheckBox;         // Registration hold exists
+    @FXML private CheckBox prereqCheckBox;       
+    @FXML private CheckBox holdCheckBox;         
     
     @FXML private Button evaluateButton;
     @FXML private TextArea resultTextArea;
@@ -24,18 +25,28 @@ public class MainViewController {
     // Backend instances for team modules
     private final SecureSteps secureStepsSimulator = new SecureSteps();
     private final LaptopWise laptopWiseSimulator = new LaptopWise();
-    private final LaptopCatalog laptopCatalog = new LaptopCatalog();
+    
+    // Initialize Ahmed's sample catalog with COSC 208, COSC 301, and MATH 231
+    private final LaptopCatalog laptopCatalog = LaptopCatalog.createSampleCatalog();
 
     @FXML
     public void initialize() {
-        // 1. Populate the scenario dropdown options
+        // 1. Populate the scenario dropdown
         scenarioSelector.getItems().addAll(
             "Scenario D: SecureSteps (Login Logic)",
             "Scenario B: LaptopWise (Course Eligibility)"
         );
         scenarioSelector.setValue("Scenario D: SecureSteps (Login Logic)");
 
-        // 2. Set button action
+        // 2. Populate Ahmed's Course ComboBox dynamically from the LaptopCatalog
+        for (LaptopCatalog.Course course : laptopCatalog.getAllCourses()) {
+            courseComboBox.getItems().add(course.getCourseCode());
+        }
+        if (!courseComboBox.getItems().isEmpty()) {
+            courseComboBox.setValue(courseComboBox.getItems().get(0));
+        }
+
+        // 3. Set button action
         evaluateButton.setOnAction(event -> handleEvaluation());
     }
 
@@ -43,14 +54,14 @@ public class MainViewController {
         String selectedScenario = scenarioSelector.getValue();
 
         if (selectedScenario != null && selectedScenario.contains("SecureSteps")) {
-            // 1. Run Bruce's SecureSteps logic
+            // Run Bruce's SecureSteps logic
             boolean p = passwordCheckBox.isSelected();
             boolean v = verificationCheckBox.isSelected();
             boolean l = unlockedCheckBox.isSelected();
 
             SecureSteps.EvaluationResult result = secureStepsSimulator.evaluate(p, v, l);
 
-            // 2. Run Devin's Truth Table generator logic
+            // Run Devin's Truth Table generator logic
             StringBuilder truthTableSb = new StringBuilder();
             truthTableSb.append("\n--- Devin's Truth Table Engine ---\n");
             truthTableSb.append("P\tQ\tAND\tOR\tNOT P\n");
@@ -66,18 +77,18 @@ public class MainViewController {
                 }
             }
 
-            // 3. Display both Bruce's result and Devin's truth table
             resultTextArea.setText(result.toString() + "\n" + truthTableSb.toString());
         } 
         else if (selectedScenario != null && selectedScenario.contains("LaptopWise")) {
-            // 1. Read inputs for Ahmed's LaptopWise / CoursePath logic
+            // Run Ahmed's LaptopWise / Course Eligibility evaluation
             boolean prereq = prereqCheckBox != null && prereqCheckBox.isSelected();
             boolean hold = holdCheckBox != null && holdCheckBox.isSelected();
+            
+            String selectedCourseCode = courseComboBox.getValue();
 
             try {
-                // Evaluating using Ahmed's method (testing against a sample course code like "CS101")
                 LaptopWise.RegistrationResult regResult = laptopWiseSimulator.evaluate(
-                    "CS101",
+                    selectedCourseCode,
                     laptopCatalog,
                     prereq,
                     hold,
@@ -85,9 +96,19 @@ public class MainViewController {
                     LocalDate.now()
                 );
 
-                // 2. Format Ahmed's results for the UI text area
                 StringBuilder sb = new StringBuilder();
                 sb.append("=== Scenario B: LaptopWise / Eligibility Checker ===\n");
+                sb.append("Selected Course: ").append(selectedCourseCode).append("\n");
+                
+                // Fetch course details from catalog for extra context
+                LaptopCatalog.Course courseObj = laptopCatalog.findCourse(selectedCourseCode);
+                if (courseObj != null) {
+                    sb.append("Title: ").append(courseObj.getTitle()).append("\n");
+                    sb.append("Prerequisite Required: ").append(courseObj.getPrerequisiteCode()).append("\n");
+                    sb.append("Available Seats: ").append(courseObj.getAvailableSeats())
+                      .append(" / ").append(courseObj.getCapacity()).append("\n\n");
+                }
+
                 sb.append("Eligible: ").append(regResult.isEligible() ? "YES (TRUE)" : "NO (FALSE)").append("\n");
                 sb.append("Status: ").append(regResult.getStatusMessage()).append("\n\n");
                 sb.append("Explanations:\n");
@@ -97,8 +118,7 @@ public class MainViewController {
 
                 resultTextArea.setText(sb.toString());
             } catch (Exception e) {
-                resultTextArea.setText("Error evaluating LaptopWise: " + e.getMessage() + 
-                                       "\n(Ensure Ahmed's LaptopCatalog contains a default course like 'CS101').");
+                resultTextArea.setText("Error evaluating LaptopWise: " + e.getMessage());
             }
         }
         else {
