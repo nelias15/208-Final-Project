@@ -1,128 +1,123 @@
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextArea;
+package com.logicforge;
+
 import java.time.LocalDate;
+import java.util.Scanner;
 
 public class MainViewController {
 
-    @FXML private ComboBox<String> scenarioSelector;
-    @FXML private ComboBox<String> courseComboBox; // ComboBox for Ahmed's courses
-    
-    // UI elements for Scenario D (SecureSteps)
-    @FXML private CheckBox passwordCheckBox;     // P
-    @FXML private CheckBox verificationCheckBox; // V
-    @FXML private CheckBox unlockedCheckBox;     // L
-    
-    // UI elements for Scenario B (LaptopWise / Course Eligibility)
-    @FXML private CheckBox prereqCheckBox;       
-    @FXML private CheckBox holdCheckBox;         
-    
-    @FXML private Button evaluateButton;
-    @FXML private TextArea resultTextArea;
-
-    // Backend instances for team modules
+    // Backend instances for team modules (kept exactly as your team built them)
     private final SecureSteps secureStepsSimulator = new SecureSteps();
     private final LaptopWise laptopWiseSimulator = new LaptopWise();
-    
-    // Initialize Ahmed's sample catalog with COSC 208, COSC 301, and MATH 231
     private final LaptopCatalog laptopCatalog = LaptopCatalog.createSampleCatalog();
 
-    @FXML
-    public void initialize() {
-        // 1. Populate the scenario dropdown
-        scenarioSelector.getItems().addAll(
-            "Scenario D: SecureSteps (Login Logic)",
-            "Scenario B: LaptopWise (Course Eligibility)"
-        );
-        scenarioSelector.setValue("Scenario D: SecureSteps (Login Logic)");
+    public void runConsoleApp() {
+        Scanner scanner = new Scanner(System.in);
+        boolean running = true;
 
-        // 2. Populate Ahmed's Course ComboBox dynamically from the LaptopCatalog
-        for (LaptopCatalog.Course course : laptopCatalog.getAllCourses()) {
-            courseComboBox.getItems().add(course.getCourseCode());
-        }
-        if (!courseComboBox.getItems().isEmpty()) {
-            courseComboBox.setValue(courseComboBox.getItems().get(0));
-        }
+        System.out.println("==================================================");
+        System.out.println("  LogicForge — Explainable Decision Support (Console)");
+        System.out.println("==================================================");
 
-        // 3. Set button action
-        evaluateButton.setOnAction(event -> handleEvaluation());
+        while (running) {
+            System.out.println("\nSelect a Scenario:");
+            System.out.println("1. Scenario D: SecureSteps (Login Logic)");
+            System.out.println("2. Scenario B: LaptopWise (Course Eligibility)");
+            System.out.println("3. Exit");
+            System.out.print("Enter your choice (1-3): ");
+
+            String choice = scanner.nextLine();
+
+            if (choice.equals("1")) {
+                runSecureStepsScenario(scanner);
+            } else if (choice.equals("2")) {
+                runLaptopWiseScenario(scanner);
+            } else if (choice.equals("3")) {
+                running = false;
+                System.out.println("Exiting LogicForge. Good luck with your presentation!");
+            } else {
+                System.out.println("Invalid choice. Please enter 1, 2, or 3.");
+            }
+        }
+        scanner.close();
     }
 
-    private void handleEvaluation() {
-        String selectedScenario = scenarioSelector.getValue();
+    private void runSecureStepsScenario(Scanner scanner) {
+        System.out.println("\n--- Running Scenario D: SecureSteps ---");
+        System.out.print("Is Password correct? (true/false): ");
+        boolean p = Boolean.parseBoolean(scanner.nextLine());
 
-        if (selectedScenario != null && selectedScenario.contains("SecureSteps")) {
-            // Run Bruce's SecureSteps logic
-            boolean p = passwordCheckBox.isSelected();
-            boolean v = verificationCheckBox.isSelected();
-            boolean l = unlockedCheckBox.isSelected();
+        System.out.print("Is 2FA Verification passed? (true/false): ");
+        boolean v = Boolean.parseBoolean(scanner.nextLine());
 
-            SecureSteps.EvaluationResult result = secureStepsSimulator.evaluate(p, v, l);
+        System.out.print("Is Account Unlocked? (true/false): ");
+        boolean l = Boolean.parseBoolean(scanner.nextLine());
 
-            // Run Devin's Truth Table generator logic
-            StringBuilder truthTableSb = new StringBuilder();
-            truthTableSb.append("\n--- Devin's Truth Table Engine ---\n");
-            truthTableSb.append("P\tQ\tAND\tOR\tNOT P\n");
-            
-            boolean[] values = {true, false};
-            for (boolean bp : values) {
-                for (boolean bq : values) {
-                    boolean and = bp && bq;
-                    boolean or = bp || bq;
-                    boolean not = !bp;
-                    truthTableSb.append(bp).append("\t").append(bq).append("\t")
-                                .append(and).append("\t").append(or).append("\t").append(not).append("\n");
-                }
-            }
+        SecureSteps.EvaluationResult result = secureStepsSimulator.evaluate(p, v, l);
 
-            resultTextArea.setText(result.toString() + "\n" + truthTableSb.toString());
-        } 
-        else if (selectedScenario != null && selectedScenario.contains("LaptopWise")) {
-            // Run Ahmed's LaptopWise / Course Eligibility evaluation
-            boolean prereq = prereqCheckBox != null && prereqCheckBox.isSelected();
-            boolean hold = holdCheckBox != null && holdCheckBox.isSelected();
-            
-            String selectedCourseCode = courseComboBox.getValue();
-
-            try {
-                LaptopWise.RegistrationResult regResult = laptopWiseSimulator.evaluate(
-                    selectedCourseCode,
-                    laptopCatalog,
-                    prereq,
-                    hold,
-                    LocalDate.now().plusDays(10), // Deadline in 10 days
-                    LocalDate.now()
-                );
-
-                StringBuilder sb = new StringBuilder();
-                sb.append("=== Scenario B: LaptopWise / Eligibility Checker ===\n");
-                sb.append("Selected Course: ").append(selectedCourseCode).append("\n");
-                
-                // Fetch course details from catalog for extra context
-                LaptopCatalog.Course courseObj = laptopCatalog.findCourse(selectedCourseCode);
-                if (courseObj != null) {
-                    sb.append("Title: ").append(courseObj.getTitle()).append("\n");
-                    sb.append("Prerequisite Required: ").append(courseObj.getPrerequisiteCode()).append("\n");
-                    sb.append("Available Seats: ").append(courseObj.getAvailableSeats())
-                      .append(" / ").append(courseObj.getCapacity()).append("\n\n");
-                }
-
-                sb.append("Eligible: ").append(regResult.isEligible() ? "YES (TRUE)" : "NO (FALSE)").append("\n");
-                sb.append("Status: ").append(regResult.getStatusMessage()).append("\n\n");
-                sb.append("Explanations:\n");
-                for (String exp : regResult.getExplanations()) {
-                    sb.append(" - ").append(exp).append("\n");
-                }
-
-                resultTextArea.setText(sb.toString());
-            } catch (Exception e) {
-                resultTextArea.setText("Error evaluating LaptopWise: " + e.getMessage());
+        // Run Devin's Truth Table generator logic
+        StringBuilder truthTableSb = new StringBuilder();
+        truthTableSb.append("\n--- Devin's Truth Table Engine ---\n");
+        truthTableSb.append("P\tQ\tAND\tOR\tNOT P\n");
+        
+        boolean[] values = {true, false};
+        for (boolean bp : values) {
+            for (boolean bq : values) {
+                boolean and = bp && bq;
+                boolean or = bp || bq;
+                boolean not = !bp;
+                truthTableSb.append(bp).append("\t").append(bq).append("\t")
+                            .append(and).append("\t").append(or).append("\t").append(not).append("\n");
             }
         }
-        else {
-            resultTextArea.setText("Please select a valid scenario.");
+
+        System.out.println("\n[Results]");
+        System.out.println(result.toString());
+        System.out.println(truthTableSb.toString());
+    }
+
+    private void runLaptopWiseScenario(Scanner scanner) {
+        System.out.println("\n--- Running Scenario B: LaptopWise ---");
+        System.out.println("Available Courses:");
+        for (LaptopCatalog.Course course : laptopCatalog.getAllCourses()) {
+            System.out.println(" - " + course.getCourseCode() + ": " + course.getTitle());
+        }
+
+        System.out.print("Enter course code (e.g., COSC 208): ");
+        String selectedCourseCode = scanner.nextLine().trim();
+
+        System.out.print("Prerequisite completed? (true/false): ");
+        boolean prereq = Boolean.parseBoolean(scanner.nextLine());
+
+        System.out.print("Any registration holds? (true/false): ");
+        boolean hold = Boolean.parseBoolean(scanner.nextLine());
+
+        try {
+            LaptopWise.RegistrationResult regResult = laptopWiseSimulator.evaluate(
+                selectedCourseCode,
+                laptopCatalog,
+                prereq,
+                hold,
+                LocalDate.now().plusDays(10),
+                LocalDate.now()
+            );
+
+            System.out.println("\n=== Scenario B Results ===");
+            System.out.println("Selected Course: " + selectedCourseCode);
+            
+            LaptopCatalog.Course courseObj = laptopCatalog.findCourse(selectedCourseCode);
+            if (courseObj != null) {
+                System.out.println("Title: " + courseObj.getTitle());
+                System.out.println("Available Seats: " + courseObj.getAvailableSeats() + " / " + courseObj.getCapacity());
+            }
+
+            System.out.println("Eligible: " + (regResult.isEligible() ? "YES (TRUE)" : "NO (FALSE)"));
+            System.out.println("Status: " + regResult.getStatusMessage());
+            System.out.println("Explanations:");
+            for (String exp : regResult.getExplanations()) {
+                System.out.println(" - " + exp);
+            }
+        } catch (Exception e) {
+            System.out.println("Error evaluating LaptopWise: " + e.getMessage());
         }
     }
 }
