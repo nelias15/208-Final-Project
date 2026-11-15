@@ -1,24 +1,9 @@
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-
-import java.io.IOException;
-
-public class Main extends Application {
-
-    @Override
-    public void start(Stage primaryStage) throws IOException {
-        // Loads your main UI layout 
-        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("MainView.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 800, 600);
-
-        primaryStage.setTitle("LogicForge — Explainable Decision Support");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
-
+public class Main {
     public static void main(String[] args) {
-        launch();
+        // Call your project's main logic or backend controller here
+        System.out.println("Starting LogicForge — Explainable Decision Support...");
+        
+        // Example: If your main logic starts from another class or controller:
+        // MainViewController.runApp();
     }
 }
